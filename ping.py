@@ -4,18 +4,19 @@ import csv
 from datetime import datetime
 import os
 
-def ping_ip(ip_address: str, csv_file: str = "Ping/ping_results.csv") -> None:
+def ping_ip(ip_address: str, csv_file: str = "dat/ping_results.csv") -> None:
 	"""
-	Realiza un ping a una IP, mide el tiempo en milisegundos y guarda el resultado con timestamp en un CSV.
+	Pings an IP address, measures the response time in milliseconds,
+	and saves the result with a timestamp to a CSV file.
 
-	:param ip_address: Dirección IP o dominio a hacer ping.
-	:param csv_file: Nombre del archivo CSV donde guardar los resultados.
+	:param ip_address: IP address or domain to ping.
+	:param csv_file: Name of the CSV file to save the results.
 	:return: None
 	"""
 	start_time = time.time()
 
 	try:
-		# Ejecuta el ping (1 solo paquete)
+		# Execute the ping (send only 1 packet)
 		result = subprocess.run(
 			["ping", "-c", "1", "-W", "2", ip_address],
 			stdout=subprocess.PIPE,
@@ -28,17 +29,17 @@ def ping_ip(ip_address: str, csv_file: str = "Ping/ping_results.csv") -> None:
 		duration_ms = round((end_time - start_time) * 1000, 2)
 
 		if result.returncode == 0:
-			print(f"Ping a {ip_address} exitoso: {duration_ms} ms")
+			print(f"Ping to {ip_address} successful: {duration_ms} ms")
 		else:
-			print(f"Fallo el ping a {ip_address}. Error: {result.stderr}")
+			print(f"Ping to {ip_address} failed. Error: {result.stderr}")
 			duration_ms = 1000
 
 	except Exception as e:
-		print(f"Error al ejecutar el ping: {e}")
+		print(f"Error executing ping: {e}")
 		timestamp = datetime.now().isoformat()
 		duration_ms = 1000
 
-	# Guardar en el archivo CSV
+	# Save to CSV file
 	file_exists = os.path.isfile(csv_file)
 	with open(csv_file, mode="a", newline="") as file:
 		writer = csv.writer(file)
@@ -49,8 +50,9 @@ def ping_ip(ip_address: str, csv_file: str = "Ping/ping_results.csv") -> None:
 	return None
 
 
-# Ejemplo de uso
+# Example usage
 if __name__ == "__main__":
+	os.makedirs("dat", exist_ok=True)
 	while True:
 		ping_ip("google.com")
-		time.sleep(1)
+		time.sleep(0.5)
