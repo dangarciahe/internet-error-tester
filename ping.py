@@ -7,11 +7,11 @@ from typing import Optional, Sequence
 
 def tcp_ping(host: str, port: int = 443, timeout: float = 2.0) -> Optional[float]:
 	"""
-	Intenta abrir una conexión TCP para medir latencia.
-	:param host: Host o IP de destino.
-	:param port: Puerto TCP (443 por defecto).
-	:param timeout: Timeout en segundos para la conexión.
-	:return: Latencia en milisegundos si conecta; None si falla.
+	Attempts to open a TCP connection to measure latency.
+	:param host: Target host or IP address.
+	:param port: TCP port (default is 443).
+	:param timeout: Connection timeout in seconds.
+	:return: Latency in milliseconds if successful; None if it fails.
 	"""
 	start = time.perf_counter()
 	try:
@@ -30,12 +30,12 @@ def ping_host(
 	fail_value_ms: float = 1000.0
 ) -> None:
 	"""
-	Prueba uno o varios puertos TCP y registra el primer éxito (o un fallo).
-	:param host: Host o IP de destino.
-	:param ports: Lista de puertos a intentar en orden (primero que conecte gana).
-	:param timeout: Timeout por intento (s).
-	:param csv_file: Ruta del CSV para guardar resultados.
-	:param fail_value_ms: Valor a registrar si todos los puertos fallan.
+	Tests one or more TCP ports and logs the first success (or failure).
+	:param host: Target host or IP address.
+	:param ports: List of ports to try in order (first successful one wins).
+	:param timeout: Timeout per attempt (seconds).
+	:param csv_file: Path to the CSV file for storing results.
+	:param fail_value_ms: Value to record if all ports fail.
 	:return: None
 	"""
 	timestamp = datetime.now().isoformat()
@@ -44,12 +44,12 @@ def ping_host(
 	for p in ports:
 		latency_ms = tcp_ping(host, p, timeout)
 		if latency_ms is not None:
-			print(f"TCP ping a {host}:{p} OK: {latency_ms} ms")
+			print(f"TCP ping to {host}:{p} OK: {latency_ms} ms")
 			break
 
 	if latency_ms is None:
 		latency_ms = fail_value_ms
-		print(f"TCP ping a {host} falló (puertos probados: {list(ports)}).")
+		print(f"TCP ping to {host} failed (ports tested: {list(ports)}).")
 
 	file_exists = os.path.isfile(csv_file)
 	os.makedirs(os.path.dirname(csv_file), exist_ok=True) if os.path.dirname(csv_file) else None
