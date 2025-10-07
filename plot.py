@@ -13,14 +13,14 @@ def plot_ping_times(csv_file: str = "dat/ping_results.csv") -> None:
 		df = pd.read_csv(csv_file, parse_dates=["timestamp"])
 
 		# Remove failed pings (null values)
-		df = df.dropna(subset=["ping_ms"])
+		df = df.dropna(subset=["latency_ms"])
 
 		# Sort by timestamp
 		df = df.sort_values("timestamp")
 
 		# Plot
 		plt.figure(figsize=(10, 6))
-		plt.plot(df["timestamp"], df["ping_ms"], marker="o", linestyle="-")
+		plt.plot(df["timestamp"], df["latency_ms"], marker="o", linestyle="-")
 		plt.title("Ping Time Series")
 		plt.xlabel("Timestamp")
 		plt.ylabel("Ping Time (ms)")
