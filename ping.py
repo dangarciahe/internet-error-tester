@@ -5,11 +5,11 @@ from datetime import datetime
 import os
 from typing import Optional, Sequence
 
-from colorama import Fore, Style, init
+from colorama import Fore, init
 
 ## Colorama config
 init(autoreset=True) 
-RED_COLOR_THRESHOLD_MS = 150.0  # Latency threshold for red-colored output
+SLOW_PING_THRESHOLD_MS = 200.0  # Latency threshold for red-colored output
 
 
 def tcp_ping(
@@ -58,7 +58,7 @@ def ping_host(
 	for p in ports:
 		latency_ms = tcp_ping(host, p, timeout)
 		if latency_ms is not None:
-			if latency_ms > RED_COLOR_THRESHOLD_MS:
+			if latency_ms > SLOW_PING_THRESHOLD_MS:
 				print(f"{Fore.YELLOW}High ping to {host}:{p}: {latency_ms} ms")
 			else:
 				print(f"{Fore.GREEN}Ping OK to {host}:{p}: {latency_ms} ms")
