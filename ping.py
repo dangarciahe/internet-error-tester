@@ -5,7 +5,18 @@ from datetime import datetime
 import os
 from typing import Optional, Sequence
 
-def tcp_ping(host: str, port: int = 443, timeout: float = 2.0) -> Optional[float]:
+from colorama import Fore, Style, init
+
+## Colorama config
+init(autoreset=True) 
+RED_COLOR_THRESHOLD_MS = 150.0  # Latency threshold for red-colored output
+
+
+def tcp_ping(
+		host: str,
+		port: int = 443,
+		timeout: float = 2.0
+	) -> Optional[float]:
 	"""
 	Attempts to open a TCP connection to measure latency.
 	:param host: Target host or IP address.
@@ -14,13 +25,16 @@ def tcp_ping(host: str, port: int = 443, timeout: float = 2.0) -> Optional[float
 	:return: Latency in milliseconds if successful; None if it fails.
 	"""
 	start = time.perf_counter()
+	
 	try:
 		with socket.create_connection((host, port), timeout=timeout):
 			pass
 		lat_ms = (time.perf_counter() - start) * 1000.0
 		return round(lat_ms, 2)
+	
 	except Exception:
 		return None
+
 
 def ping_host(
 	host: str,
@@ -44,12 +58,15 @@ def ping_host(
 	for p in ports:
 		latency_ms = tcp_ping(host, p, timeout)
 		if latency_ms is not None:
-			print(f"TCP ping to {host}:{p} OK: {latency_ms} ms")
-			break
+			if latency_ms > RED_COLOR_THRESHOLD_MS:
+				print(f"{Fore.YELLOW}High ping to {host}:{p}: {latency_ms} ms")
+			else:
+				print(f"{Fore.GREEN}Ping OK to {host}:{p}: {latency_ms} ms")
+				break
 
 	if latency_ms is None:
 		latency_ms = fail_value_ms
-		print(f"TCP ping to {host} failed (ports tested: {list(ports)}).")
+		print(f"{Fore.RED}Failed ping to {host}")
 
 	file_exists = os.path.isfile(csv_file)
 	os.makedirs(os.path.dirname(csv_file), exist_ok=True) if os.path.dirname(csv_file) else None
@@ -61,8 +78,10 @@ def ping_host(
 
 	return None
 
+
 if __name__ == "__main__":
 	os.makedirs("dat", exist_ok=True)
+	
 	while True:
 		ping_host("google.com", ports=(443, 80), timeout=2.0, csv_file="dat/ping_results.csv")
 		time.sleep(0.5)
