@@ -84,4 +84,4 @@ if __name__ == "__main__":
 	
 	while True:
 		ping_host("google.com", ports=(443, 80), timeout=2.0, csv_file="dat/ping_results.csv")
-		time.sleep(0.5)
+		time.sleep(1)
